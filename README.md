@@ -1,40 +1,35 @@
 # E-Commerce Backend
 
-Spring Boot 3 / Java 21 REST API. **Current status: Phase 1 (project foundation).**
+Spring Boot 3 / Java 21 REST API. **Current status: Phase 2 (authentication).**
 The full README (architecture, deployment, AWS, troubleshooting) is completed in Phase 17.
 
 ## Prerequisites
-1. JDK 21 (`java -version`)
-2. Maven 3.9+ (`mvn -v`)
-3. Docker Desktop / Docker Engine (`docker compose version`)
+JDK 21+ (`java -version`), Maven 3.9+ (`mvn -v`), Docker (`docker compose version`).
 
-## Run locally
-```bash
-cp .env.example .env            # then set DATABASE_PASSWORD (any local value)
-docker compose up -d            # PostgreSQL + Redis
-mvn spring-boot:run             # profile defaults to dev, Flyway runs V1 automatically
+## Run locally (Windows PowerShell)
+```powershell
+copy .env.example .env     # then edit .env: DATABASE_PASSWORD and JWT_SECRET (see below)
+docker compose up -d       # PostgreSQL (host port 5433) + Redis (6379)
+mvn spring-boot:run        # dev profile; Flyway applies V1..V3
 ```
-Verify:
-```bash
-curl localhost:8080/actuator/health
-curl localhost:8080/api/v1/system/ping
+Generate a JWT secret (>= 32 characters) and paste it into `.env`:
+```powershell
+$b = New-Object byte[] 48; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)
 ```
-Swagger UI (dev only): http://localhost:8080/swagger-ui.html
+Run tests: `mvn test`. Swagger (dev only): http://localhost:8081/swagger-ui.html
 
-Run tests: `mvn test`
+## Authentication API
+| Method | Path | Auth |
+|---|---|---|
+| POST | /api/v1/auth/register | public |
+| POST | /api/v1/auth/login | public |
+| POST | /api/v1/auth/refresh | public (needs refresh token) |
+| POST | /api/v1/auth/logout | public (needs refresh token) |
+| GET | /api/v1/users/me | Bearer access token |
 
-## Profiles
-| Profile | Use | Swagger | Schema |
-|---|---|---|---|
-| dev | local machine, reads `.env` | on | Flyway + `ddl-auto=validate` |
-| test | automated tests | n/a | Testcontainers (Phase 16) |
-| prod | Render / AWS, env vars only | off unless `SWAGGER_ENABLED=true` | Flyway + `validate` |
+Access token: 15 minutes (`JWT_ACCESS_EXPIRATION`, seconds). Refresh token: 7 days (`JWT_REFRESH_EXPIRATION`),
+stored hashed, rotated on every use; replaying an old one revokes the whole session.
 
 ## Git workflow
-```bash
-git init -b main
-git add . && git commit -m "chore(project): bootstrap spring boot project"
-git checkout -b develop
-git checkout -b feature/project-setup   # day-to-day work happens on feature/* branches
-```
-Feature branches are created from `develop`, merged back by Pull Request. `main` only receives releases.
+Work on `feature/*` branches created from `develop`; merge by Pull Request. `main` only receives releases.
+Commit format: `type(scope): description`, e.g. `feat(auth): add jwt authentication`.

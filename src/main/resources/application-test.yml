@@ -8,3 +8,5 @@ app:
 logging:
   level:
     root: WARN
+  jwt:
+    secret: test-only-secret-test-only-secret-1234567890
