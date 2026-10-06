@@ -1,0 +1,22 @@
+# Build
+target/
+*.log
+
+# Secrets (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+# Used by automated tests. Phase 16 points this at Testcontainers; no real secrets here.
+spring:
+  jpa:
+    show-sql: false
+app:
+  cors:
+    allowed-origins: http://localhost:3000
+logging:
+  level:
+    root: WARN

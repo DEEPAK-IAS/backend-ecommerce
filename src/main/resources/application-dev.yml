@@ -1,0 +1,18 @@
+spring:
+  config:
+    # Loads KEY=VALUE pairs from a local .env file (git-ignored) so you don't export variables by hand.
+    import: optional:file:.env[.properties]
+  jpa:
+    show-sql: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    com.example.ecommerce: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %-5level [%X{requestId:-}] %logger{36} - %msg%n"

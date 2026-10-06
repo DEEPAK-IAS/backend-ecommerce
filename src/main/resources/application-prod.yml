@@ -1,0 +1,13 @@
+# No defaults for anything sensitive: if a variable is missing the app fails fast at startup.
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}
+
+logging:
+  level:
+    root: INFO
+    com.example.ecommerce: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX,UTC} %-5level [%X{requestId:-}] %logger{36} - %msg%n"

@@ -1,0 +1,31 @@
+# LOCAL DEVELOPMENT ONLY. Production uses managed PostgreSQL/Redis and never this file.
+# The Spring Boot app runs from your IDE/Maven; the app container is added in Phase 17.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecommerce-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ecommerce_dev}
+      POSTGRES_USER: ${DATABASE_USERNAME:-ecommerce}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?Set DATABASE_PASSWORD in .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-ecommerce} -d ${POSTGRES_DB:-ecommerce_dev}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
